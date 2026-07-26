@@ -14,8 +14,7 @@ dist-ssr
 *.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
+**/.vscode/
 .idea
 .DS_Store
 *.suo
@@ -49,3 +48,4 @@ build/
 .windsurf/
 .agents/
 skills-lock.json
+*.md

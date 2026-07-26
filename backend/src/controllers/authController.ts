@@ -22,6 +22,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).json(user);
   } catch (error: any) {
+    console.error(">>> REGISTRATION ERROR DETECTED <<<");
+    console.error(error);
     res.status(400).json({ error: error.message });
   }
 };

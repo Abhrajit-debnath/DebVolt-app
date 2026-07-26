@@ -11,11 +11,13 @@ app.use(cors());
 app.use(express.json());
 
 import partRoutes from './routes/partRoutes';
+import authRoutes from './routes/authRoutes';
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Welcome to debVolt API');
 });
 
+app.use('/api/auth', authRoutes);
 app.use('/api/parts', partRoutes);
 
 app.listen(port, () => {

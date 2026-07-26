@@ -43,3 +43,9 @@ dist-ssr
 .next/
 out/
 build/
+
+# AI/Agent skills generated files
+.claude/
+.windsurf/
+.agents/
+skills-lock.json

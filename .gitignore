@@ -49,3 +49,4 @@ build/
 .agents/
 skills-lock.json
 *.md
+*.jpeg

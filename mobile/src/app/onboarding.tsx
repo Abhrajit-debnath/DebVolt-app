@@ -60,11 +60,11 @@ export default function OnboardingScreen() {
 
       <View className="flex-1">
         {QualityOptions.map((option, index) => (
-          <QualityCards 
-            key={index} 
-            title={option.title} 
-            description={option.description} 
-            iconName={option.iconName} 
+          <QualityCards
+            key={index}
+            title={option.title}
+            description={option.description}
+            iconName={option.iconName}
           />
         ))}
       </View>

@@ -24,21 +24,20 @@ export default function RootLayout() {
     'PlusJakarta-ExtraBold': PlusJakartaSans_800ExtraBold,
   });
 
-  if (!fontsLoaded) return null; 
+  if (!fontsLoaded) return null;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-     
-      <StatusBar 
-        style={colorScheme === 'dark' ? "light" : "dark"} 
-        backgroundColor={colorScheme === 'dark' ? "#121212" : "#ffffff"} 
+
+      <StatusBar
+        style={colorScheme === 'dark' ? "light" : "dark"}
       />
-      
+
       <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="register" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} /> */}
+        <Stack.Screen name="(main)" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
   );

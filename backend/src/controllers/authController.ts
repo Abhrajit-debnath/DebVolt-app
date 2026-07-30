@@ -43,3 +43,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     res.status(401).json({ error: error.message });
   }
 };
+
+export const logout = async (req: Request, res: Response): Promise<void> => {
+  try {
+    res.json({ message: 'Logged out successfully' });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Logout failed' });
+  }
+};

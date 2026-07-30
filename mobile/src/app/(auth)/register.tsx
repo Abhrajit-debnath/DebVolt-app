@@ -1,39 +1,36 @@
-import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router'; 
-import apiClient from '../../api/apiClient';
+import { useForm, Controller } from 'react-hook-form';
+import * as SecureStore from 'expo-secure-store';
 import { Image } from 'expo-image';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { RegisterPayload } from '@/types';
+import Toast from 'react-native-toast-message';
+import { notify } from '@/notifications/toast';
 
 export default function RegisterScreen() {
+  const { registerUser,loading } = useAuth();
   const router = useRouter(); 
-  
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleRegister = async () => {
-    if (!name || !phone || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: { name: '', phone: '', password: '' }
+  });
 
-    setLoading(true);
+  const onSubmit = async (data: RegisterPayload) => {
     try {
-      await apiClient.post('/auth/register', { 
-        name, 
-        phone, 
-        password,
+      const response = await registerUser({
+        ...data,
         role: 'CUSTOMER'
       });
       
-      Alert.alert('Success', 'Account created! You can now log in.');
-      router.back(); 
+     
+      await SecureStore.setItemAsync('jwt_token', response.token);
+
+      notify("Registered successfully!", "success");
+      router.replace('/home'); 
     } catch (error: any) {
       console.error('Registration Error:', error);
-      Alert.alert('Registration Failed', error.response?.data?.error || 'Network error. Is the backend running?');
-    } finally {
-      setLoading(false);
+          notify("Registration failed!", "error");
     }
   };
 
@@ -51,40 +48,69 @@ export default function RegisterScreen() {
 
       <View className="mb-4">
         <Text className="text-on-background font-jakarta text-label-md mb-2">Full Name</Text>
-        <TextInput
-          className="border border-outline bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline"
-          placeholder="Enter your name"
-          value={name}
-          onChangeText={setName}
+        <Controller
+          control={control}
+          rules={{ required: 'Name is required'}}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              className={`border bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline ${errors.name ? 'border-error' : 'border-outline'}`}
+              placeholder="Enter your name"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+                  maxLength={10}
+            />
+          )}
+      
+          name="name"
         />
+        {errors.name && <Text className="text-error font-jakarta text-sm mt-1">{errors.name.message as string}</Text>}
       </View>
 
       <View className="mb-4">
         <Text className="text-on-background font-jakarta text-label-md mb-2">Mobile Number</Text>
-        <TextInput
-          className="border border-outline bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline"
-          placeholder="Enter mobile number"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-          autoCapitalize="none"
+        <Controller
+          control={control}
+          rules={{ required: 'Mobile number is required' }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              className={`border bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline ${errors.phone ? 'border-error' : 'border-outline'}`}
+              placeholder="Enter mobile number"
+              keyboardType="phone-pad"
+              autoCapitalize="none"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="phone"
         />
+        {errors.phone && <Text className="text-error font-jakarta text-sm mt-1">{errors.phone.message as string}</Text>}
       </View>
 
       <View className="mb-8">
         <Text className="text-on-background font-jakarta text-label-md mb-2">Password</Text>
-        <TextInput
-          className="border border-outline bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline"
-          placeholder="Create a password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
+        <Controller
+          control={control}
+          rules={{ required: 'Password is required', minLength: { value: 6, message: 'Password must be at least 6 characters' } }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              className={`border bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline ${errors.password ? 'border-error' : 'border-outline'}`}
+              placeholder="Create a password"
+              secureTextEntry
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="password"
         />
+        {errors.password && <Text className="text-error font-jakarta text-sm mt-1">{errors.password.message as string}</Text>}
       </View>
 
       <TouchableOpacity 
         className={`w-full py-4 rounded-md items-center justify-center ${loading ? 'bg-primary/50' : 'bg-primary'}`}
-        onPress={handleRegister}
+        onPress={handleSubmit(onSubmit)}
         disabled={loading}
       >
         {loading ? (

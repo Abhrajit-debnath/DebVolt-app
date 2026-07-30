@@ -1,34 +1,36 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useForm, Controller } from 'react-hook-form';
 import apiClient from '../../api/apiClient';
 import * as SecureStore from 'expo-secure-store';
 import { Image } from 'expo-image';
+import Toast from 'react-native-toast-message';
+import { LoginPayload } from '@/types';
+import { useAuth } from '@/hooks/auth/useAuth';
+import { notify } from '@/notifications/toast';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { loginUser, loading } = useAuth();
 
-  const handleLogin = async () => {
-    if (!phone || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: { phone: '', password: '' }
+  });
 
-    setLoading(true);
+ const onSubmit = async (data: LoginPayload) => {
     try {
-      const response = await apiClient.post('/auth/login', { phone, password });
-      const token = response.data.token;
-      await SecureStore.setItemAsync('jwt_token', token);
+      const response = await loginUser({
+        ...data,
+      });
 
-      Alert.alert('Success', 'Logged in successfully!');
-      // router.replace('/home'); // Will go here later
+      await SecureStore.setItemAsync('jwt_token', response.token);
+
+      notify("Logged in successfully!", "success");
+      router.replace('/home'); 
     } catch (error: any) {
-      Alert.alert('Login Failed', error.response?.data?.error || 'Network error.');
-    } finally {
-      setLoading(false);
+      console.error('Login Error:', error);
+          notify("Login failed!", "error");
     }
   };
 
@@ -46,27 +48,46 @@ export default function LoginScreen() {
 
       <View className="mb-4">
         <Text className="text-on-background font-jakarta text-label-md mb-2">Mobile Number</Text>
-        <TextInput
-          className="border border-outline bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline"
-          placeholder="Enter mobile number"
-          placeholderTextColor="#8d90a0"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-          autoCapitalize="none"
+        <Controller
+          control={control}
+          rules={{ required: 'Mobile number is required' }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              className={`border bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline ${errors.phone ? 'border-error' : 'border-outline'}`}
+              placeholder="Enter mobile number"
+              placeholderTextColor="#8d90a0"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              keyboardType="phone-pad"
+              autoCapitalize="none"
+            />
+          )}
+          name="phone"
         />
+        {errors.phone && <Text className="text-error font-jakarta text-sm mt-1">{errors.phone.message as string}</Text>}
       </View>
 
       <View className="mb-8">
         <Text className="text-on-background font-jakarta text-label-md mb-2">Password</Text>
-        <TextInput
-          className="border border-outline bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline"
-          placeholder="Enter password"
-          placeholderTextColor="#8d90a0"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
+        <Controller
+          control={control}
+          rules={{ required: 'Password is required' }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              className={`border bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline ${errors.password ? 'border-error' : 'border-outline'}`}
+              placeholder="Enter password"
+              placeholderTextColor="#8d90a0"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              secureTextEntry
+            />
+          )}
+          name="password"
         />
+        {errors.password && <Text className="text-error font-jakarta text-sm mt-1">{errors.password.message as string}</Text>}
+        
         <TouchableOpacity className="mt-2 self-end">
           <Text className="text-primary font-jakarta text-label-md">Forgot Password?</Text>
         </TouchableOpacity>
@@ -74,7 +95,7 @@ export default function LoginScreen() {
 
       <TouchableOpacity
         className={`w-full py-4 rounded-md items-center justify-center ${loading ? 'bg-primary/50' : 'bg-primary'}`}
-        onPress={handleLogin}
+        onPress={handleSubmit(onSubmit)}
         disabled={loading}
       >
         {loading ? (

@@ -10,10 +10,15 @@ import {
   PlusJakartaSans_700Bold,
   PlusJakartaSans_800ExtraBold
 } from '@expo-google-fonts/plus-jakarta-sans';
+import Toast from 'react-native-toast-message';
 import '../global.css';
+import { useAuthStore } from '@/store/authStore';
+import { useEffect } from 'react';
+import AuthContext from '@/components/providers/AuthContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const isAppReady = useAuthStore((state) => state.isAppReady);
 
   // Load the fonts before rendering the app!
   const [fontsLoaded] = useFonts({
@@ -28,17 +33,21 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-
       <StatusBar
         style={colorScheme === 'dark' ? "light" : "dark"}
       />
+      <>
+        <AuthContext>
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(main)" options={{ headerShown: false }} />
+          </Stack>
+        </AuthContext>
 
-      <Stack>
-        {/* <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} /> */}
-        <Stack.Screen name="(main)" options={{ headerShown: false }} />
-      </Stack>
+        <Toast />
+      </>
     </ThemeProvider>
   );
 }

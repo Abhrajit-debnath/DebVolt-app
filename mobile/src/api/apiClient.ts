@@ -21,7 +21,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      // 1. Fetch the token securely from the phone's encrypted storage
+      // Fetch the token securely from the phone's encrypted storage
       const token = await SecureStore.getItemAsync('jwt_token');
 
       // 2. If a token exists, attach it to the Authorization header

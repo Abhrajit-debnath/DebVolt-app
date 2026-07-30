@@ -12,7 +12,7 @@ const QualityCards = ({ title, description, iconName }: QualityCardsProps) => {
     return (
         <View className="rounded-lg p-4 flex-row items-center gap-4 mb-4">
             <View className="bg-primary-container rounded-lg h-14 w-14 items-center justify-center">
-                <Feather name={iconName} size={24} color="#ffff" /> 
+                <Feather name={iconName} size={24} color="#ffff" />
             </View>
             <View className="flex-1">
                 <Text className="text-inverse-on-surface font-jakarta-bold text-body-lg">{title}</Text>

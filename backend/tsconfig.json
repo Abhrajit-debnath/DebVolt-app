@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": "./src",
     "outDir": "./dist",
     "module": "commonjs",
     "target": "es2022",
@@ -8,5 +9,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*", "api/**/*"]
+  "include": ["src/**/*"]
 }

@@ -16,9 +16,15 @@ import { useAuthStore } from '@/store/authStore';
 import { useEffect } from 'react';
 import AuthContext from '@/components/providers/AuthContext';
 
+import * as SplashScreen from 'expo-splash-screen';
+
+// Prevent the splash screen from auto-hiding while we load fonts and auth state!
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const isAppReady = useAuthStore((state) => state.isAppReady);
+  const checkSession = useAuthStore((state) => state.checkSession);
 
   // Load the fonts before rendering the app!
   const [fontsLoaded] = useFonts({
@@ -29,7 +35,17 @@ export default function RootLayout() {
     'PlusJakarta-ExtraBold': PlusJakartaSans_800ExtraBold,
   });
 
-  if (!fontsLoaded) return null;
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    if (fontsLoaded && isAppReady) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, isAppReady]);
+
+  if (!fontsLoaded || !isAppReady) return null;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

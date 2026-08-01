@@ -1,16 +1,19 @@
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router'; 
+import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import * as SecureStore from 'expo-secure-store';
 import { Image } from 'expo-image';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { RegisterPayload } from '@/types';
-import Toast from 'react-native-toast-message';
 import { notify } from '@/notifications/toast';
+import { useState } from 'react';
+import Entypo from '@expo/vector-icons/Entypo'
+import AntDesign from '@expo/vector-icons/build/AntDesign';
 
 export default function RegisterScreen() {
-  const { registerUser,loading } = useAuth();
-  const router = useRouter(); 
+  const { registerUser, loading } = useAuth();
+  const router = useRouter();
+   const [showPassword, setShowPassword] = useState(false);
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: { name: '', phone: '', password: '' }
@@ -22,23 +25,22 @@ export default function RegisterScreen() {
         ...data,
         role: 'CUSTOMER'
       });
-      
-     
+
+
       await SecureStore.setItemAsync('jwt_token', response.token);
 
       notify("Registered successfully!", "success");
-      router.replace('/home'); 
+      router.replace('/home');
     } catch (error: any) {
-      console.error('Registration Error:', error);
-          notify("Registration failed!", "error");
+      notify(error.message, "error");
     }
   };
 
   return (
     <View className="flex-1 bg-background justify-center p-margin-page">
       <View className="items-center mb-10">
-        <Image 
-          source={require('../../../assets/images/logo.svg')} 
+        <Image
+          source={require('../../../assets/images/logo.svg')}
           style={{ width: 80, height: 80, marginBottom: 16 }}
           contentFit="contain"
         />
@@ -50,7 +52,7 @@ export default function RegisterScreen() {
         <Text className="text-on-background font-jakarta text-label-md mb-2">Full Name</Text>
         <Controller
           control={control}
-          rules={{ required: 'Name is required'}}
+          rules={{ required: 'Name is required' }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               className={`border bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline ${errors.name ? 'border-error' : 'border-outline'}`}
@@ -58,10 +60,10 @@ export default function RegisterScreen() {
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-                  maxLength={10}
+
             />
           )}
-      
+
           name="name"
         />
         {errors.name && <Text className="text-error font-jakarta text-sm mt-1">{errors.name.message as string}</Text>}
@@ -81,6 +83,7 @@ export default function RegisterScreen() {
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
+              maxLength={10}
             />
           )}
           name="phone"
@@ -97,18 +100,25 @@ export default function RegisterScreen() {
             <TextInput
               className={`border bg-surface-container-low text-on-surface px-4 py-3 rounded-md font-jakarta text-body-md placeholder:text-outline ${errors.password ? 'border-error' : 'border-outline'}`}
               placeholder="Create a password"
-              secureTextEntry
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
+              secureTextEntry={showPassword}
             />
           )}
           name="password"
         />
+
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} className="absolute right-4 top-10">
+          {
+            showPassword ? <Entypo name="eye" size={20} color="#8d90a0" /> : <AntDesign name="eye-invisible" size={20} color="#8d90a0" />
+          }
+
+        </TouchableOpacity>
         {errors.password && <Text className="text-error font-jakarta text-sm mt-1">{errors.password.message as string}</Text>}
       </View>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         className={`w-full py-4 rounded-md items-center justify-center ${loading ? 'bg-primary/50' : 'bg-primary'}`}
         onPress={handleSubmit(onSubmit)}
         disabled={loading}
@@ -120,8 +130,8 @@ export default function RegisterScreen() {
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity 
-        className="mt-6 items-center" 
+      <TouchableOpacity
+        className="mt-6 items-center"
         onPress={() => router.back()}
       >
         <Text className="text-on-surface-variant font-jakarta text-body-md">

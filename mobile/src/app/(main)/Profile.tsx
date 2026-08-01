@@ -43,16 +43,14 @@ export default function ProfileScreen() {
 
 
 
-  
+
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top + 100 }}>
 
-      {
-        openLogoutModal && (
-          <ConfirmLogoutModal isVisible={openLogoutModal} setIsvisible={setOpenLogoutModal} />
-        )
-      }
+{/* logout modal  */}
+      <ConfirmLogoutModal isVisible={openLogoutModal} setIsvisible={setOpenLogoutModal} />
+
       <ScrollView className="flex-1 px-margin-page" showsVerticalScrollIndicator={false}>
 
         {/* Page Title */}
@@ -65,7 +63,7 @@ export default function ProfileScreen() {
           </View>
           <View className="flex-1">
             <Text className="text-on-primary-container font-jakarta-bold text-headline-md mb-1">{user?.name || 'User'}</Text>
-               <Text className="text-on-primary-container font-jakarta-semibold text-body-sm mb-1">{user?.phone || ''}</Text>
+            <Text className="text-on-primary-container font-jakarta-semibold text-body-sm mb-1">{user?.phone || ''}</Text>
             <Text className="text-on-primary-container/80 font-jakarta-bold text-body-md">{user?.role || ''}</Text>
           </View>
           <TouchableOpacity className="w-10 h-10 bg-primary/10 rounded-full items-center justify-center">
@@ -85,7 +83,7 @@ export default function ProfileScreen() {
         {/* Logout Section */}
         <View className="bg-surface-container-low rounded-3xl p-5 mb-10 shadow-sm border border-outline-variant">
           <ProfileOption icon="help-circle" title="Help & Support" />
-          <ProfileOption icon="log-out" title="Log Out" isDestructive={true} onPress={()=>setOpenLogoutModal(true)} />
+          <ProfileOption icon="log-out" title="Log Out" isDestructive={true} onPress={() => setOpenLogoutModal(true)} />
         </View>
 
       </ScrollView>

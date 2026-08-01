@@ -4,4 +4,9 @@ export const apiRoutes = {
         register: '/auth/register',
         logout: '/auth/logout',
     },
+    products: {
+        list: '/products',
+        listByCategory: (categoryId: string) => `/products/${categoryId}`,
+    
+    },
 }

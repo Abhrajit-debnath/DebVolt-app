@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { authService } from "@/services/auth/auth";
+import { authService } from "@/services/authService/auth";
 import { LoginPayload, RegisterPayload } from "@/types";
 import { useAuthStore } from "@/store/authStore";
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false); 
-  
-  // Pull actions from our global Zustand store!
   const setSession = useAuthStore((state) => state.setSession);
   const clearSession = useAuthStore((state) => state.logout);
 

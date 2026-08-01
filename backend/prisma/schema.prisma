@@ -14,18 +14,16 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  phone     String   @unique
-  password  String
-  name      String?
-  role      Role     @default(CUSTOMER)
-  vehicleNo String?  // For drivers/customers
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  repairJobs  RepairJob[] @relation("MechanicJobs")
-  warranties  Warranty[]
+  id         String      @id @default(uuid())
+  phone      String      @unique
+  password   String
+  name       String?
+  role       Role        @default(CUSTOMER)
+  vehicleNo  String? // For drivers/customers
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  repairJobs RepairJob[] @relation("MechanicJobs")
+  warranties Warranty[]
 }
 
 enum Category {
@@ -53,13 +51,13 @@ model Part {
   retailPrice    Float
   wholesalePrice Float
   stockStatus    StockStatus @default(IN_STOCK)
-  imageUrl       String?     // Cloudinary URL
+  imageUrl       String? // Cloudinary URL
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
   // Relations
-  warranties     Warranty[]
-  repairJobs     RepairJob[]
+  warranties Warranty[]
+  repairJobs RepairJob[]
 }
 
 enum JobStatus {
@@ -69,32 +67,40 @@ enum JobStatus {
 }
 
 model RepairJob {
-  id          String    @id @default(uuid())
-  token       String    @unique // e.g., RJ-1001
-  status      JobStatus @default(PENDING)
-  
-  mechanicId  String?
-  mechanic    User?     @relation("MechanicJobs", fields: [mechanicId], references: [id])
-  
-  partId      String?
-  part        Part?     @relation(fields: [partId], references: [id])
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id         String    @id @default(uuid())
+  token      String    @unique // e.g., RJ-1001
+  status     JobStatus @default(PENDING)
+  mechanicId String?
+  mechanic   User?     @relation("MechanicJobs", fields: [mechanicId], references: [id])
+  partId     String?
+  part       Part?     @relation(fields: [partId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model Warranty {
   id           String   @id @default(uuid())
   serialNumber String   @unique
   purchaseDate DateTime @default(now())
-  durationDays Int      // e.g., 365 for 1 year
-  
+  durationDays Int
   userId       String
   user         User     @relation(fields: [userId], references: [id])
-  
   partId       String
   part         Part     @relation(fields: [partId], references: [id])
-  
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// Products
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  stock       Int
+  category    Category
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

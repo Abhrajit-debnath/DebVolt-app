@@ -15,6 +15,7 @@ app.use(express.json());
 
 import partRoutes from './routes/partRoutes';
 import authRoutes from './routes/authRoutes';
+import productRoutes from './routes/productRoutes';
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Welcome to debVolt API');
@@ -22,6 +23,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/parts', partRoutes);
+app.use('/api/products', productRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

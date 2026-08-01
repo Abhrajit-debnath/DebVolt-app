@@ -1,19 +1,25 @@
 import { useEffect } from 'react';
-import Animated, { BounceInUp, SlideInLeft, useSharedValue, ZoomIn } from 'react-native-reanimated';
+import Animated, { BounceInUp, SlideInLeft, ZoomIn } from 'react-native-reanimated';
 import { View, Text } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
+import { useAuthStore } from '@/store/authStore';
 
 export default function SplashScreen() {
   const router = useRouter();
 
+  const user = useAuthStore(state => state.user);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.replace('/onboarding');
+      if (user) {
+        router.replace('/home');
+      } else {
+        router.replace('/onboarding');
+      }
     }, 2500);
     return () => clearTimeout(timer);
-  }, [router]);
+  }, [router, user]);
 
   return (
     <View className="flex-1 bg-primary items-center justify-center p-margin-page">

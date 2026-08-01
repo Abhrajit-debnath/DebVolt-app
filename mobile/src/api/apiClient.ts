@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 // We use your computer's local IP address because the Android/iOS emulator 
 // cannot connect to "localhost". 
 // Replace "YOUR_LOCAL_IP" with your actual Wi-Fi IP address (e.g. 192.168.1.100)
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.34:3000/api';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.39:3000/api';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,

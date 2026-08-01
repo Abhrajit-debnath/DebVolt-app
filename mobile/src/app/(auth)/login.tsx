@@ -1,24 +1,26 @@
-import { useState } from 'react';
+
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
-import apiClient from '../../api/apiClient';
 import * as SecureStore from 'expo-secure-store';
 import { Image } from 'expo-image';
-import Toast from 'react-native-toast-message';
 import { LoginPayload } from '@/types';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { notify } from '@/notifications/toast';
+import Entypo from '@expo/vector-icons/Entypo'
+import AntDesign from '@expo/vector-icons/build/AntDesign';
+import { useState } from 'react';
 
 export default function LoginScreen() {
   const router = useRouter();
   const { loginUser, loading } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: { phone: '', password: '' }
   });
 
- const onSubmit = async (data: LoginPayload) => {
+  const onSubmit = async (data: LoginPayload) => {
     try {
       const response = await loginUser({
         ...data,
@@ -27,10 +29,10 @@ export default function LoginScreen() {
       await SecureStore.setItemAsync('jwt_token', response.token);
 
       notify("Logged in successfully!", "success");
-      router.replace('/home'); 
+      router.replace('/home');
     } catch (error: any) {
       console.error('Login Error:', error);
-          notify("Login failed!", "error");
+      notify("Login failed!", "error");
     }
   };
 
@@ -61,6 +63,7 @@ export default function LoginScreen() {
               value={value}
               keyboardType="phone-pad"
               autoCapitalize="none"
+              maxLength={10}
             />
           )}
           name="phone"
@@ -81,13 +84,24 @@ export default function LoginScreen() {
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-              secureTextEntry
+              secureTextEntry={showPassword}
             />
           )}
           name="password"
         />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} className="absolute right-4 top-10">
+          {
+            showPassword ? <Entypo name="eye" size={20} color="#8d90a0" /> : <AntDesign name="eye-invisible" size={20} color="#8d90a0" />
+          }
+
+        </TouchableOpacity>
+
+
+
+
+
         {errors.password && <Text className="text-error font-jakarta text-sm mt-1">{errors.password.message as string}</Text>}
-        
+
         <TouchableOpacity className="mt-2 self-end">
           <Text className="text-primary font-jakarta text-label-md">Forgot Password?</Text>
         </TouchableOpacity>
